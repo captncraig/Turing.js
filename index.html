@@ -11,6 +11,7 @@ var current = 0;
 var min = -19;
 var max = 19;
 
+var delay=300;
 
 function moveTape(dist){
     //TODO: Dynamically add elements at edges.
@@ -23,7 +24,7 @@ function moveTape(dist){
         d = -204;
         current++;
     }
-    $("#tape").animate({left: "+="+d});
+    $("#tape").animate({left: "+="+d},delay);
 }
 
 
@@ -106,7 +107,7 @@ var states = new Array();
  states[7]['0'] = new rule(7,'0','L');
  states[7]['1'] = new rule(7,'1','L');
  states[7]['-'] = new rule(7,'-','H');
- */
+*/
 
 /* states[1] = new Array();
  states[1]['0'] = new rule(1,'0','R');
@@ -209,6 +210,7 @@ var states = new Array();
  states[18]['-'] = new rule(1,'-','R');
  */
 
+/*
 states[0] = new Array();
 states[0][0] = new rule(0,'0','R');
 states[0][1] = new rule(0,'1','R');
@@ -234,7 +236,7 @@ states[1][7] = new rule(0,'8','R');
 states[1][8] = new rule(0,'9','R');
 states[1][9] = new rule(1,'0','L');
 states[1]['-'] = new rule(0,'1','R');
-
+*/
 //Subtractor
 /*states[0] = new Array();
  states[0][0] = new rule(0,'0','R');
@@ -277,9 +279,9 @@ states[1]['-'] = new rule(0,'1','R');
  states[9][1] = new rule(9,'1','H');
  states[9]['-'] = new rule(9,'0','H');*/
 
-
+/*
 //Palindromes
-/*states[0] = new Array();
+states[0] = new Array();
  states[0]["-"] = new rule(2,'#','R');
  states[2] = new Array();
  states[2]["0"] = new rule(3,'-','R');
@@ -322,44 +324,66 @@ states[1]['-'] = new rule(0,'1','R');
  states[13] = new Array();
  states[13]["-"] = new rule(14,'N','R');
  states[14] = new Array();
- states[14]["-"] = new rule(14,'O','H');*/
-
+ states[14]["-"] = new rule(14,'O','H');
+*/
 
 
 //ROT13
-/*states["start"] = new Array();
- states["stop"] = new Array();
- var s = states["start"];
- s["a"] = new rule("start",'n','R');
- s["b"] = new rule("start",'o','R');
- s["c"] = new rule("start",'p','R');
- s["d"] = new rule("start",'q','R');
- s["e"] = new rule("start",'r','R');
- s["f"] = new rule("start",'s','R');
- s["g"] = new rule("start",'t','R');
- s["h"] = new rule("start",'u','R');
- s["i"] = new rule("start",'v','R');
- s["j"] = new rule("start",'w','R');
- s["k"] = new rule("start",'x','R');
- s["l"] = new rule("start",'y','R');
- s["m"] = new rule("start",'z','R');
- s["n"] = new rule("start",'a','R');
- s["o"] = new rule("start",'b','R');
- s["p"] = new rule("start",'c','R');
- s["q"] = new rule("start",'d','R');
- s["r"] = new rule("start",'e','R');
- s["s"] = new rule("start",'f','R');
- s["t"] = new rule("start",'g','R');
- s["u"] = new rule("start",'h','R');
- s["v"] = new rule("start",'i','R');
- s["w"] = new rule("start",'j','R');
- s["x"] = new rule("start",'k','R');
- s["y"] = new rule("start",'l','R');
- s["z"] = new rule("start",'m','R');
- s[" "] = new rule("start",' ','R');
- s["$"] = new rule("stop",'$','L');*/
+/*
+states[0] = new Array();
+ states[1] = new Array();
+ var s = states[0];
+ s["a"] = new rule(0,'n','R');
+ s["b"] = new rule(0,'o','R');
+ s["c"] = new rule(0,'p','R');
+ s["d"] = new rule(0,'q','R');
+ s["e"] = new rule(0,'r','R');
+ s["f"] = new rule(0,'s','R');
+ s["g"] = new rule(0,'t','R');
+ s["h"] = new rule(0,'u','R');
+ s["i"] = new rule(0,'v','R');
+ s["j"] = new rule(0,'w','R');
+ s["k"] = new rule(0,'x','R');
+ s["l"] = new rule(0,'y','R');
+ s["m"] = new rule(0,'z','R');
+ s["n"] = new rule(0,'a','R');
+ s["o"] = new rule(0,'b','R');
+ s["p"] = new rule(0,'c','R');
+ s["q"] = new rule(0,'d','R');
+ s["r"] = new rule(0,'e','R');
+ s["s"] = new rule(0,'f','R');
+ s["t"] = new rule(0,'g','R');
+ s["u"] = new rule(0,'h','R');
+ s["v"] = new rule(0,'i','R');
+ s["w"] = new rule(0,'j','R');
+ s["x"] = new rule(0,'k','R');
+ s["y"] = new rule(0,'l','R');
+ s["z"] = new rule(0,'m','R');
+ s[" "] = new rule(0,' ','R');
+ s["$"] = new rule(1,'$','L');
+*/
 
+//busy beaver
+states[0] = new Array();
+states[1] = new Array();
+states[2] = new Array();
+states[3] = new Array();
+states[4] = new Array();
 
+states[0]["-"] = new rule(1,"1","R");
+states[0]["1"] = new rule(2,"1","L");
+
+states[1]["-"] = new rule(2,"1","R");
+states[1]["1"] = new rule(1,"1","R");
+
+states[2]["-"] = new rule(3,"1","R");
+states[2]["1"] = new rule(4,"-","L");
+
+states[3]["-"] = new rule(0,"1","L");
+states[3]["1"] = new rule(3,"1","L");
+
+states[4]["-"] = new rule(0,"1","R");
+states[4]["1"] = new rule(0,"-","L");
 
 
 var currentState;
@@ -389,7 +413,7 @@ function run(){
     $("#state").html(currentState);
     $("#curcell").html(current);
     $("#count").html(count++);
-    setTimeout("run()",500);
+    setTimeout("run()",delay);
 }
 
 </script>
