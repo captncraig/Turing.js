@@ -1,0 +1,26 @@
+
+.reel{
+    width 100%;
+    overflow:hidden;
+}
+
+.tape{
+    position:relative;
+    left: -3300px;
+}
+
+#head{
+    width:10px;
+    height:10px;
+    background-color: red;
+    position:relative;
+    left: 673px;
+}
+
+.cell{
+    background-color: #777777;
+    min-width:200px;
+    max-width:200px;
+    height:200px;
+    text-align: center;
+}

@@ -1,0 +1,457 @@
+
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="turing.css" />
+<script type="text/javascript" src="jquery.min.js"></script>
+
+
+<script type="text/javascript">
+var current = 0;
+var min = -19;
+var max = 19;
+
+function moveTape(dist){
+    //TODO: Dynamically add elements at edges.
+    var d = 0;
+    if(dist=='1' || dist=='L'){
+        d = 204;
+        current--;
+    }
+    else if(dist=='-1' || dist=='R'){
+        d = -204;
+        current++;
+    }
+    $("#tape").animate({left: "+="+d});
+}
+
+
+function createCellLeft(){
+    max += 1;
+    $("#row").append("<td id=cell"+max+" class='cell'>-</td>");
+}
+
+function setTape(){
+    while(current != 0){
+        moveTape(current < 0 ? '-1' : '1');
+    }
+    var text = $("#init").val();
+    var i;
+    for(i=0; i<text.length; i++){
+        if(i > max){
+            createCellLeft();
+        }
+        var cell = $("#cell"+i);
+        cell.html(text[i]);
+    }
+    while(i<=max){
+        var cell = $("#cell"+i);
+        cell.html("-");
+        i++;
+    }
+}
+
+
+function rule(state,write,move)
+{
+    this.state = state;
+    this.write = write;
+    this.move = move;
+}
+
+var states = new Array();
+
+//Counter.
+/*states[0] = new Array();
+ states[0]['0'] = new rule(0,'0','R');
+ states[0]['1'] = new rule(0,'1','R');
+ states[0]['-'] = new rule(1,'-','L');
+ states[1] = new Array();
+ states[1]['0'] = new rule(0,'1','R');
+ states[1]['1'] = new rule(1,'0','L');
+ states[1]['-'] = new rule(0,'1','R');*/
+
+//adder
+/*
+ states[0] = new Array();
+ states[0]['0'] = new rule(0,'0','R');
+ states[0]['1'] = new rule(0,'1','R');
+ states[0]['-'] = new rule(1,'-','R');
+ states[1] = new Array();
+ states[1]['0'] = new rule(1,'0','R');
+ states[1]['1'] = new rule(1,'1','R');
+ states[1]['-'] = new rule(2,'-','L');
+ states[2] = new Array();
+ states[2]['0'] = new rule(2,'1','L');
+ states[2]['1'] = new rule(3,'0','L');
+ states[2]['-'] = new rule(5,'-','R');
+ states[3] = new Array();
+ states[3]['0'] = new rule(3,'0','L');
+ states[3]['1'] = new rule(3,'1','L');
+ states[3]['-'] = new rule(4,'-','L');
+ states[4] = new Array();
+ states[4]['0'] = new rule(0,'1','R');
+ states[4]['1'] = new rule(4,'0','L');
+ states[4]['-'] = new rule(0,'1','R');
+ states[5] = new Array();
+ states[5]['0'] = new rule(5,'-','R');
+ states[5]['1'] = new rule(5,'-','R');
+ states[5]['-'] = new rule(6,'-','L');
+ states[6] = new Array();
+ states[6]['0'] = new rule(7,'0','L');
+ states[6]['1'] = new rule(7,'1','L');
+ states[6]['-'] = new rule(6,'-','L');
+ states[7] = new Array();
+ states[7]['0'] = new rule(7,'0','L');
+ states[7]['1'] = new rule(7,'1','L');
+ states[7]['-'] = new rule(7,'-','H');
+ */
+
+/* states[1] = new Array();
+ states[1]['0'] = new rule(1,'0','R');
+ states[1]['1'] = new rule(1,'1','R');
+ states[1]['$'] = new rule(1,'$','R');
+ states[1]['!'] = new rule(1,'!','R');
+ states[1]['-'] = new rule(2,'-','L');
+
+ states[2] = new Array();
+ states[2]['0'] = new rule(4,'!','L');
+ states[2]['1'] = new rule(3,'$','L');
+ states[2]['$'] = new rule(2,'$','L');
+ states[2]['!'] = new rule(2,'!','L');
+ states[2]['-'] = new rule(8,'-','R');
+
+ states[3] = new Array();
+ states[3]['0'] = new rule(3,'0','L');
+ states[3]['1'] = new rule(3,'1','L');
+ states[3]['$'] = new rule(3,'$','L');
+ states[3]['!'] = new rule(3,'!','L');
+ states[3]['-'] = new rule(5,'-','L');
+
+ states[4] = new Array();
+ states[4]['0'] = new rule(4,'0','L');
+ states[4]['1'] = new rule(4,'1','L');
+ states[4]['$'] = new rule(4,'$','L');
+ states[4]['!'] = new rule(4,'!','L');
+ states[4]['-'] = new rule(6,'-','L');
+
+ states[5] = new Array();
+ states[5]['0'] = new rule(5,'0','L');
+ states[5]['1'] = new rule(5,'1','L');
+ states[5]['-'] = new rule(7,'1','R');
+
+ states[6] = new Array();
+ states[6]['0'] = new rule(6,'0','L');
+ states[6]['1'] = new rule(6,'1','L');
+ states[6]['-'] = new rule(7,'0','R');
+
+ states[7] = new Array();
+ states[7]['0'] = new rule(7,'0','R');
+ states[7]['1'] = new rule(7,'1','R');
+ states[7]['-'] = new rule(1,'-','R');
+
+ states[8] = new Array();
+ states[8]['0'] = new rule(8,'0','R');
+ states[8]['1'] = new rule(8,'1','R');
+ states[8]['$'] = new rule(8,'1','R');
+ states[8]['!'] = new rule(8,'0','R');
+ states[8]['-'] = new rule(9,'-','R');
+
+ states[9] = new Array();
+ states[9]['0'] = new rule(9,'0','R');
+ states[9]['1'] = new rule(9,'1','R');
+ states[9]['-'] = new rule(10,'-','L');
+
+ states[10] = new Array();
+ states[10]['0'] = new rule(10,'1','L');
+ states[10]['1'] = new rule(11,'0','L');
+ states[10]['-'] = new rule("stop",'-','L');
+
+ states[11] = new Array();
+ states[11]['0'] = new rule(11,'0','L');
+ states[11]['1'] = new rule(11,'1','L');
+ states[11]['-'] = new rule(12,'-','L');
+
+ states[12] = new Array();
+ states[12]['0'] = new rule(12,'0','L');
+ states[12]['1'] = new rule(12,'1','L');
+ states[12]['-'] = new rule(13,'-','L');
+
+ states[13] = new Array();
+ states[13]['0'] = new rule(13,'1','L');
+ states[13]['1'] = new rule(14,'0','L');
+ states[13]['-'] = new rule(18,'-','R');
+
+ states[14] = new Array();
+ states[14]['0'] = new rule(14,'0','L');
+ states[14]['1'] = new rule(14,'1','L');
+ states[14]['-'] = new rule(15,'-','L');
+
+ states[15] = new Array();
+ states[15]['0'] = new rule(16,'1','R');
+ states[15]['1'] = new rule(15,'0','L');
+ states[15]['-'] = new rule(16,'1','R');
+
+ states[16] = new Array();
+ states[16]['0'] = new rule(16,'0','R');
+ states[16]['1'] = new rule(16,'1','R');
+ states[16]['-'] = new rule(17,'-','R');
+
+ states[17] = new Array();
+ states[17]['0'] = new rule(17,'0','R');
+ states[17]['1'] = new rule(17,'1','R');
+ states[17]['-'] = new rule(13,'-','L');
+
+ states[18] = new Array();
+ states[18]['0'] = new rule(18,'-','R');
+ states[18]['1'] = new rule(18,'-','R');
+ states[18]['-'] = new rule(1,'-','R');
+ */
+
+states[0] = new Array();
+states[0][0] = new rule(0,'0','R');
+states[0][1] = new rule(0,'1','R');
+states[0][2] = new rule(0,'2','R');
+states[0][3] = new rule(0,'3','R');
+states[0][4] = new rule(0,'4','R');
+states[0][5] = new rule(0,'5','R');
+states[0][6] = new rule(0,'6','R');
+states[0][7] = new rule(0,'7','R');
+states[0][8] = new rule(0,'8','R');
+states[0][9] = new rule(0,'9','R');
+states[0]['-'] = new rule(1,'-','L');
+
+states[1] = new Array();
+states[1][0] = new rule(0,'1','R');
+states[1][1] = new rule(0,'2','R');
+states[1][2] = new rule(0,'3','R');
+states[1][3] = new rule(0,'4','R');
+states[1][4] = new rule(0,'5','R');
+states[1][5] = new rule(0,'6','R');
+states[1][6] = new rule(0,'7','R');
+states[1][7] = new rule(0,'8','R');
+states[1][8] = new rule(0,'9','R');
+states[1][9] = new rule(1,'0','L');
+states[1]['-'] = new rule(0,'1','R');
+
+//Subtractor
+/*states[0] = new Array();
+ states[0][0] = new rule(0,'0','R');
+ states[0][1] = new rule(0,'1','R');
+ states[0]['-'] = new rule(1,'-','R');
+ states[1] = new Array();
+ states[1][0] = new rule(1,'0','R');
+ states[1][1] = new rule(1,'1','R');
+ states[1]['-'] = new rule(2,'-','L');
+ states[2] = new Array();
+ states[2][0] = new rule(2,'0','L');
+ states[2][1] = new rule(3,'0','L');
+ states[2]['-'] = new rule(5,'-','R');
+ states[3] = new Array();
+ states[3][0] = new rule(3,'0','L');
+ states[3][1] = new rule(3,'1','L');
+ states[3]['-'] = new rule(8,'-','L');
+ states[4] = new Array();
+ states[4][0] = new rule(4,'0','R');
+ states[4][1] = new rule(4,'1','R');
+ states[4]['-'] = new rule(5,'-','R');
+ states[5] = new Array();
+ states[5][0] = new rule(5,'0','R');
+ states[5][1] = new rule(5,'1','R');
+ states[5]['-'] = new rule(6,'-','L');
+ states[6] = new Array();
+ states[6][0] = new rule(6,'-','L');
+ states[6][1] = new rule(6,'1','L');
+ states[6]['-'] = new rule(7,'-','L');
+ states[7] = new Array();
+ states[7][0] = new rule(7,'-','L');
+ states[7][1] = new rule(7,'1','L');
+ states[7]['-'] = new rule(9,'-','R');
+ states[8] = new Array();
+ states[8][0] = new rule(8,'0','L');
+ states[8][1] = new rule(0,'0','R');
+ states[8]['-'] = new rule(4,'-','R');
+ states[9] = new Array();
+ states[9][0] = new rule(9,'0','H');
+ states[9][1] = new rule(9,'1','H');
+ states[9]['-'] = new rule(9,'0','H');*/
+
+
+//Palindromes
+/*states[0] = new Array();
+ states[0]["-"] = new rule(2,'#','R');
+ states[2] = new Array();
+ states[2]["0"] = new rule(3,'-','R');
+ states[2]["1"] = new rule(4,'-','R');
+ states[2]["-"] = new rule(7,'-','L');
+ states[3] = new Array();
+ states[3]["0"] = new rule(3,'0','R');
+ states[3]["1"] = new rule(3,'1','R');
+ states[3]["-"] = new rule(5,'-','L');
+ states[4] = new Array();
+ states[4]["0"] = new rule(4,'0','R');
+ states[4]["1"] = new rule(4,'1','R');
+ states[4]["-"] = new rule(6,'-','L');
+ states[5] = new Array();
+ states[5]["0"] = new rule(11,'-','L');
+ states[5]["1"] = new rule(12,'-','L');
+ states[5]["-"] = new rule(7,'-','L');
+ states[6] = new Array();
+ states[6]["0"] = new rule(12,'-','L');
+ states[6]["1"] = new rule(11,'-','L');
+ states[6]["-"] = new rule(7,'-','L');
+ states[7] = new Array();
+ states[7]["-"] = new rule(7,'-','L');
+ states[7]["#"] = new rule(8,'-','R');
+ states[8] = new Array();
+ states[8]["-"] = new rule(9,'Y','R');
+ states[9] = new Array();
+ states[9]["-"] = new rule(10,'E','R');
+ states[10] = new Array();
+ states[10]["-"] = new rule(10,'S','H');
+ states[11] = new Array();
+ states[11]["0"] = new rule(11,'0','L');
+ states[11]["1"] = new rule(11,'1','L');
+ states[11]["-"] = new rule(2,'-','R');
+ states[12] = new Array();
+ states[12]["0"] = new rule(12,'-','L');
+ states[12]["1"] = new rule(12,'-','L');
+ states[12]["-"] = new rule(12,'-','L');
+ states[12]["#"] = new rule(13,'-','R');
+ states[13] = new Array();
+ states[13]["-"] = new rule(14,'N','R');
+ states[14] = new Array();
+ states[14]["-"] = new rule(14,'O','H');*/
+
+
+
+//ROT13
+/*states["start"] = new Array();
+ states["stop"] = new Array();
+ var s = states["start"];
+ s["a"] = new rule("start",'n','R');
+ s["b"] = new rule("start",'o','R');
+ s["c"] = new rule("start",'p','R');
+ s["d"] = new rule("start",'q','R');
+ s["e"] = new rule("start",'r','R');
+ s["f"] = new rule("start",'s','R');
+ s["g"] = new rule("start",'t','R');
+ s["h"] = new rule("start",'u','R');
+ s["i"] = new rule("start",'v','R');
+ s["j"] = new rule("start",'w','R');
+ s["k"] = new rule("start",'x','R');
+ s["l"] = new rule("start",'y','R');
+ s["m"] = new rule("start",'z','R');
+ s["n"] = new rule("start",'a','R');
+ s["o"] = new rule("start",'b','R');
+ s["p"] = new rule("start",'c','R');
+ s["q"] = new rule("start",'d','R');
+ s["r"] = new rule("start",'e','R');
+ s["s"] = new rule("start",'f','R');
+ s["t"] = new rule("start",'g','R');
+ s["u"] = new rule("start",'h','R');
+ s["v"] = new rule("start",'i','R');
+ s["w"] = new rule("start",'j','R');
+ s["x"] = new rule("start",'k','R');
+ s["y"] = new rule("start",'l','R');
+ s["z"] = new rule("start",'m','R');
+ s[" "] = new rule("start",' ','R');
+ s["$"] = new rule("stop",'$','L');*/
+
+
+
+
+var currentState;
+var count;
+function start(){
+    currentState = 0;
+    count = 0;
+    run();
+}
+
+function run(){
+    if(currentState == "stop"){alert("finished"); return;}
+    var state = states[currentState];
+    //alert(state.length);
+    var cell = $("#cell"+current).html();
+
+
+    var rule = state[cell];
+    //alert(rule);
+    var write = rule.write;
+    var move = rule.move;
+    var state = rule.state;
+    $("#cell"+current).html(write);
+    if(move=='H') {alert("finished"); return;}
+    moveTape(move);
+    currentState = state;
+    $("#state").html(currentState);
+    $("#curcell").html(current);
+    $("#count").html(count++);
+    setTimeout("run()",500);
+}
+
+</script>
+
+
+
+</head>
+<body>
+<div id="reel" class="reel">
+    <table id="tape" class="tape">
+        <tr id="row">
+            <td id="cell-19" class="cell">-</td>
+            <td id="cell-18" class="cell">-</td>
+            <td id="cell-17" class="cell">-</td>
+            <td id="cell-16" class="cell">-</td>
+            <td id="cell-15" class="cell">-</td>
+            <td id="cell-14" class="cell">-</td>
+            <td id="cell-13" class="cell">-</td>
+            <td id="cell-12" class="cell">-</td>
+            <td id="cell-11" class="cell">-</td>
+            <td id="cell-10" class="cell">-</td>
+            <td id="cell-9" class="cell">-</td>
+            <td id="cell-8" class="cell">-</td>
+            <td id="cell-7" class="cell">-</td>
+            <td id="cell-6" class="cell">-</td>
+            <td id="cell-5" class="cell">-</td>
+            <td id="cell-4" class="cell">-</td>
+            <td id="cell-3" class="cell">-</td>
+            <td id="cell-2" class="cell">-</td>
+            <td id="cell-1" class="cell">-</td>
+            <td id="cell0" class="cell">-</td>
+            <td id="cell1" class="cell">-</td>
+            <td id="cell2" class="cell">-</td>
+            <td id="cell3" class="cell">-</td>
+            <td id="cell4" class="cell">-</td>
+            <td id="cell5" class="cell">-</td>
+            <td id="cell6" class="cell">-</td>
+            <td id="cell7" class="cell">-</td>
+            <td id="cell8" class="cell">-</td>
+            <td id="cell9" class="cell">-</td>
+            <td id="cell10" class="cell">-</td>
+            <td id="cell11" class="cell">-</td>
+            <td id="cell12" class="cell">-</td>
+            <td id="cell13" class="cell">-</td>
+            <td id="cell14" class="cell">-</td>
+            <td id="cell15" class="cell">-</td>
+            <td id="cell16" class="cell">-</td>
+            <td id="cell17" class="cell">-</td>
+            <td id="cell18" class="cell">-</td>
+            <td id="cell19" class="cell">-</td>
+        </tr></table></div>
+<div id="head"></div>
+
+<a href="javascript:moveTape('1')">Left</a>
+<a href="javascript:moveTape('-1')">Right</a>
+
+<form id="setForm">
+    <input id="init" name="initialState" type="Text" size="100">
+    <input type="button" onclick="setTape()" value="Set Initial State">
+</form>
+
+<a href="javascript:start()">GO!</a>
+<div id="curcell">0</div>
+<div id="state">0</div>
+<div id="count">0</div>
+</body>
+</html>
